@@ -9,7 +9,9 @@ import { ApiService } from '../shared/api.service'
 })
 export class EmployeeDashboardComponent implements OnInit {
 
+  chosenFile !: any;
   employeeModelObj : EmployeeModel = new EmployeeModel();
+  imgString !: String;
   formValue !: FormGroup;
   showAdd !: boolean;
   showUpdate !: boolean;
@@ -18,6 +20,7 @@ export class EmployeeDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.formValue = this.formbuilder.group({
+      empImg : [''],
       empName : [''],
       email : [''],
       mobile : [''],
@@ -33,12 +36,15 @@ export class EmployeeDashboardComponent implements OnInit {
   }
   postEmployeeDetails() {
     this.employeeModelObj = new EmployeeModel();
+    this.employeeModelObj.empImg = this.imgString;
+    // console.log(this.imgString);
     this.employeeModelObj.empName = this.formValue.value.empName;
     this.employeeModelObj.email = this.formValue.value.email;
     this.employeeModelObj.mobile = this.formValue.value.mobile;
     this.employeeModelObj.salary = this.formValue.value.salary;
-
     this.api.postEmployee(this.employeeModelObj)
+
+    // this.api.postEmployee(json)
     .subscribe(res=>{
       console.log(res);
       alert("Employee Added Successfully");
@@ -73,6 +79,7 @@ export class EmployeeDashboardComponent implements OnInit {
     this.showAdd = false;
     this.showUpdate = true;
     this.employeeModelObj.id = row.id;
+    this.formValue.controls['empImg'].setValue(row.empImg);
     this.formValue.controls['empName'].setValue(row.empName);
     this.formValue.controls['email'].setValue(row.email);
     this.formValue.controls['mobile'].setValue(row.mobile);
@@ -80,6 +87,7 @@ export class EmployeeDashboardComponent implements OnInit {
   }
 
   updateEmployeeDetails() {
+    this.employeeModelObj.empImg = this.formValue.value.empImg;
     this.employeeModelObj.empName = this.formValue.value.empName;
     this.employeeModelObj.email = this.formValue.value.email;
     this.employeeModelObj.mobile = this.formValue.value.mobile;
@@ -93,6 +101,28 @@ export class EmployeeDashboardComponent implements OnInit {
       this.getAllEmployee();
     })
 
+  }
+  onFileSelected(event : any) {
+    // console.log(event.target.files[0]);
+    this.chosenFile = event.target.files[0];
+    let reader = new FileReader();
+    var base64String= new String();
+    reader.readAsDataURL(this.chosenFile);
+  //   reader.onload = function () {
+  //    base64String = (<string>reader.result).split(',')[1];
+  //    callback(reader.result);
+  //     // console.log(base64String);
+  // }
+      let me = this;
+  reader.onloadend = (e) => {
+    // console.log(reader.result);
+    // console.log((<string>reader.result).split(',')[1]);
+    me.imgString = (<string>reader.result).split(',')[1];
+    // console.log((<string>reader.result).split(',')[1]);
+    // console.log(reader.result);
+    // console.log("TESTING THIS");
+ };
+  
   }
 
 }

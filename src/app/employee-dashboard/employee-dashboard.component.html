@@ -9,6 +9,7 @@
 <table class="table mt-3">
     <thead>
         <tr>
+            <th scope="col">Employee Image</th>
             <th scope="col">Employee ID</th>
             <th scope="col">Name</th>
             <th scope="col">Email ID</th>
@@ -18,6 +19,8 @@
         </tr>
     </thead>
         <tr *ngFor="let row of employeeData">
+            <!--<td><img src="{{row.empImg}}" alt="emp-img"></td> -->
+            <td>{{row.empImg}}</td>
             <td>{{row.id}}</td>
             <td>{{row.empName}}</td>
             <td>{{row.email}}</td>
@@ -43,6 +46,10 @@
         </div>
         <div class="modal-body">
             <form [formGroup] = "formValue">
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Image</label>
+                <input type="file" (change)="onFileSelected($event)" formControlName="empImg" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+              </div>
                 <div class="mb-3">
                   <label for="exampleInputEmail1" class="form-label">Name</label>
                   <input type="text" formControlName="empName" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
