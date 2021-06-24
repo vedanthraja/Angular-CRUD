@@ -1,7 +1,6 @@
 export class EmployeeModel {
     id : number = 0;
-    firstName : String = '';
-    lastName : String = '';
+    empName : String = '';
     email : String = '';
     mobile : String = '';
     salary : String = '';

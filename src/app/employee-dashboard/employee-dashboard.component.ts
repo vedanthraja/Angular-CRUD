@@ -18,8 +18,7 @@ export class EmployeeDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.formValue = this.formbuilder.group({
-      firstName : [''],
-      lastName : [''],
+      empName : [''],
       email : [''],
       mobile : [''],
       salary : ['']
@@ -34,8 +33,7 @@ export class EmployeeDashboardComponent implements OnInit {
   }
   postEmployeeDetails() {
     this.employeeModelObj = new EmployeeModel();
-    this.employeeModelObj.firstName = this.formValue.value.firstName;
-    this.employeeModelObj.lastName = this.formValue.value.lastName;
+    this.employeeModelObj.empName = this.formValue.value.empName;
     this.employeeModelObj.email = this.formValue.value.email;
     this.employeeModelObj.mobile = this.formValue.value.mobile;
     this.employeeModelObj.salary = this.formValue.value.salary;
@@ -75,16 +73,14 @@ export class EmployeeDashboardComponent implements OnInit {
     this.showAdd = false;
     this.showUpdate = true;
     this.employeeModelObj.id = row.id;
-    this.formValue.controls['firstName'].setValue(row.firstName);
-    this.formValue.controls['lastName'].setValue(row.lastName);
+    this.formValue.controls['empName'].setValue(row.empName);
     this.formValue.controls['email'].setValue(row.email);
     this.formValue.controls['mobile'].setValue(row.mobile);
     this.formValue.controls['salary'].setValue(row.salary);
   }
 
   updateEmployeeDetails() {
-    this.employeeModelObj.firstName = this.formValue.value.firstName;
-    this.employeeModelObj.lastName = this.formValue.value.lastName;
+    this.employeeModelObj.empName = this.formValue.value.empName;
     this.employeeModelObj.email = this.formValue.value.email;
     this.employeeModelObj.mobile = this.formValue.value.mobile;
     this.employeeModelObj.salary = this.formValue.value.salary;
