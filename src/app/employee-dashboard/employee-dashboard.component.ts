@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { EmployeeModel } from './employee-dashboard.model';
 import { ApiService } from '../shared/api.service'
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-employee-dashboard',
   templateUrl: './employee-dashboard.component.html',
   styleUrls: ['./employee-dashboard.component.css']
 })
 export class EmployeeDashboardComponent implements OnInit {
-
+  image: SafeUrl | null = null;
   chosenFile !: any;
   employeeModelObj : EmployeeModel = new EmployeeModel();
   imgString !: String;
@@ -16,7 +17,8 @@ export class EmployeeDashboardComponent implements OnInit {
   showAdd !: boolean;
   showUpdate !: boolean;
   employeeData !: any;
-  constructor(private formbuilder : FormBuilder, private api: ApiService) { }
+  no_forms : number = 1;
+  constructor(private formbuilder : FormBuilder, private api: ApiService, private sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
     this.formValue = this.formbuilder.group({
@@ -65,6 +67,14 @@ export class EmployeeDashboardComponent implements OnInit {
     .subscribe(res=>{
       this.employeeData = res;
     })
+    // for (let row of this.employeeData)
+    // {
+    //   const base64Response = await fetch(`data:image/jpeg;base64,${row.empImg}`);
+    //   const blob = await base64Response.blob();
+    //   const unsafeImg = URL.createObjectURL(blob);
+    //   this.image = this.sanitizer.bypassSecurityTrustUrl(unsafeImg);
+    //   console.log(this.image);
+    // }
   }
 
   deleteEmployee(row: any) {
@@ -79,7 +89,7 @@ export class EmployeeDashboardComponent implements OnInit {
     this.showAdd = false;
     this.showUpdate = true;
     this.employeeModelObj.id = row.id;
-    this.formValue.controls['empImg'].setValue(row.empImg);
+    // this.formValue.controls['empImg'].setValue(row.empImg);
     this.formValue.controls['empName'].setValue(row.empName);
     this.formValue.controls['email'].setValue(row.email);
     this.formValue.controls['mobile'].setValue(row.mobile);
@@ -87,7 +97,7 @@ export class EmployeeDashboardComponent implements OnInit {
   }
 
   updateEmployeeDetails() {
-    this.employeeModelObj.empImg = this.formValue.value.empImg;
+    this.employeeModelObj.empImg = this.imgString;
     this.employeeModelObj.empName = this.formValue.value.empName;
     this.employeeModelObj.email = this.formValue.value.email;
     this.employeeModelObj.mobile = this.formValue.value.mobile;
@@ -100,6 +110,13 @@ export class EmployeeDashboardComponent implements OnInit {
       this.formValue.reset();
       this.getAllEmployee();
     })
+
+  }
+  addNewForm()  {
+    this.no_forms = this.no_forms + 1;
+  }
+  numSequence(n: number): Array<number> {
+    return Array(n);
 
   }
   onFileSelected(event : any) {
@@ -117,12 +134,12 @@ export class EmployeeDashboardComponent implements OnInit {
   reader.onloadend = (e) => {
     // console.log(reader.result);
     // console.log((<string>reader.result).split(',')[1]);
-    me.imgString = (<string>reader.result).split(',')[1];
+    // me.imgString = (<string>reader.result).split(',')[1];
+    me.imgString = <String>reader.result;
     // console.log((<string>reader.result).split(',')[1]);
     // console.log(reader.result);
-    // console.log("TESTING THIS");
  };
-  
   }
-
 }
+
+  
