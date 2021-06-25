@@ -2,14 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { EmployeeModel } from './employee-dashboard.model';
 import { ApiService } from '../shared/api.service'
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-employee-dashboard',
   templateUrl: './employee-dashboard.component.html',
   styleUrls: ['./employee-dashboard.component.css']
 })
 export class EmployeeDashboardComponent implements OnInit {
-  image: SafeUrl | null = null;
   chosenFile !: any;
   employeeModelObj : EmployeeModel = new EmployeeModel();
   imgString !: String;
@@ -17,8 +15,8 @@ export class EmployeeDashboardComponent implements OnInit {
   showAdd !: boolean;
   showUpdate !: boolean;
   employeeData !: any;
-  no_forms : number = 1;
-  constructor(private formbuilder : FormBuilder, private api: ApiService, private sanitizer: DomSanitizer) { }
+  multipleEmployees = [] as any;
+  constructor(private formbuilder : FormBuilder, private api: ApiService) { }
 
   ngOnInit(): void {
     this.formValue = this.formbuilder.group({
@@ -28,7 +26,9 @@ export class EmployeeDashboardComponent implements OnInit {
       mobile : [''],
       salary : ['']
     }
+    
     )
+    this.multipleEmployees.push(this.employeeModelObj);
     this.getAllEmployee();
   }
   clickAddEmployee() {
@@ -61,20 +61,34 @@ export class EmployeeDashboardComponent implements OnInit {
 
     
   }
+  postMultipleEmployeeDetails() {
+    this.multipleEmployees.pop();
+    for(let val of this.multipleEmployees)
+    {
+      this.api.postEmployee(val)
+      .subscribe(res=> {
+        console.log(res);
+        alert("Employee added successfully");
+      },
+      err=> {
+        alert("Something went wrong");
+        let ref = document.getElementById('cancel-multiple');
+        ref?.click();
+      })
+    }
+    this.multipleEmployees = [];
+    this.multipleEmployees.push(new EmployeeModel());
+    let ref = document.getElementById('cancel-multiple');
+    ref?.click();
+    this.formValue.reset;
+    this.getAllEmployee();
+  }
 
   getAllEmployee() {
     this.api.getEmployee()
     .subscribe(res=>{
       this.employeeData = res;
     })
-    // for (let row of this.employeeData)
-    // {
-    //   const base64Response = await fetch(`data:image/jpeg;base64,${row.empImg}`);
-    //   const blob = await base64Response.blob();
-    //   const unsafeImg = URL.createObjectURL(blob);
-    //   this.image = this.sanitizer.bypassSecurityTrustUrl(unsafeImg);
-    //   console.log(this.image);
-    // }
   }
 
   deleteEmployee(row: any) {
@@ -113,11 +127,16 @@ export class EmployeeDashboardComponent implements OnInit {
 
   }
   addNewForm()  {
-    this.no_forms = this.no_forms + 1;
-  }
-  numSequence(n: number): Array<number> {
-    return Array(n);
-
+    // this.employeeModelObj = new EmployeeModel();
+    this.employeeModelObj.empName = this.formValue.value.empName;
+    this.employeeModelObj.email = this.formValue.value.email;
+    this.employeeModelObj.mobile = this.formValue.value.mobile;
+    this.employeeModelObj.salary = this.formValue.value.salary;
+    this.formValue.reset;
+    this.employeeModelObj = new EmployeeModel();
+    this.multipleEmployees.push(this.employeeModelObj);
+    console.log(this.multipleEmployees);
+    
   }
   onFileSelected(event : any) {
     // console.log(event.target.files[0]);

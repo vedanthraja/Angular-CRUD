@@ -24,7 +24,6 @@
         </tr>
     </thead>
         <tr *ngFor="let row of employeeData">
-            <!-- <td>{{row.empImg}}</td> -->
             <td><img src="{{row.empImg}}" alt="emp-img"></td>
             <td>{{row.id}}</td>
             <td>{{row.empName}}</td>
@@ -83,7 +82,7 @@
       </div>
     </div>
   </div>
-  <!-- <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -91,30 +90,28 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <form *ngFor="let n of numSequence(10)" [formGroup]="formValue">
+            <form *ngFor="let obj of multipleEmployees" [formGroup]="formValue">
                 <div class="row">
                   <div class="col">
-                    <input type="text" placeholder="Name" formControlName="empName" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <input type="text" placeholder="Name"  formControlName="empName" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                   </div>
                   <div class="col">
-                    <input type="text" placeholder="Email" formControlName="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <input type="text" placeholder="Email"  formControlName="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                   </div>
                   <div class="col">
-                    <input type="text" placeholder="Mobile" formControlName="mobile" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <input type="text" placeholder="Mobile"  formControlName="mobile" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                   </div>
                   <div class="col">
-                    <input type="text" placeholder="Salary" formControlName="salary" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                  <div class="col">
-                    <button class="btn btn-danger" (click)="addNewForm()">+</button>
+                    <input type="text" placeholder="Salary"  formControlName="salary" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                   </div>
                 </div>
               </form>
         </div>
         <div class="modal-footer">
-          <button type="button"  id="cancel" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" (click)="postEmployeeDetails()">Add</button>
+          <button class="btn btn-danger" (click)="addNewForm()">+</button>
+          <button type="button"  id="cancel-multiple" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" (click)="postMultipleEmployeeDetails()">Add</button>
         </div>
       </div>
     </div>
-  </div> -->
+  </div>
