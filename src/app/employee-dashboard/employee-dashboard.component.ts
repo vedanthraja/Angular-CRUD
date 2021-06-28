@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { EmployeeModel } from './employee-dashboard.model';
-import { ApiService } from '../shared/api.service'
+import { ApiService } from '../shared/api.service';
 @Component({
   selector: 'app-employee-dashboard',
   templateUrl: './employee-dashboard.component.html',
@@ -14,29 +14,40 @@ export class EmployeeDashboardComponent implements OnInit {
   formValue !: FormGroup;
   showAdd !: boolean;
   showUpdate !: boolean;
+  imgStringModal !: String;
+  imgStringEditForm !: String;
   employeeData !: any;
-  multipleEmployees = [] as any;
+  showUploadField !: boolean;
+  multipleEmployees : EmployeeModel[] = [];
   constructor(private formbuilder : FormBuilder, private api: ApiService) { }
 
   ngOnInit(): void {
     this.formValue = this.formbuilder.group({
       empImg : [''],
-      empName : [''],
-      email : [''],
-      mobile : [''],
-      salary : ['']
+      empName : ['',[Validators.required]],
+      email : ['',[Validators.email]],
+      // email : [''],
+      mobile : ['', [Validators.required, Validators.minLength(10),Validators.maxLength(10)]],
+      // mobile : [''],
+      salary : ['', [Validators.required]]
+      // salary : ['']
     }
+    // this.formValue = new FormControl {
+    //   empImg : new FormControl
+    // }
     
     )
     this.multipleEmployees.push(this.employeeModelObj);
     this.getAllEmployee();
   }
+  // get f() { return this.formValue.controls; }
   clickAddEmployee() {
     this.formValue.reset();
+    this.showUploadField = true;
     this.showAdd = true;
     this.showUpdate = false;
   }
-  postEmployeeDetails() {
+  onSubmit()  {
     this.employeeModelObj = new EmployeeModel();
     this.employeeModelObj.empImg = this.imgString;
     // console.log(this.imgString);
@@ -44,9 +55,24 @@ export class EmployeeDashboardComponent implements OnInit {
     this.employeeModelObj.email = this.formValue.value.email;
     this.employeeModelObj.mobile = this.formValue.value.mobile;
     this.employeeModelObj.salary = this.formValue.value.salary;
-    this.api.postEmployee(this.employeeModelObj)
+  }
+  postEmployeeDetails() {
+    this.employeeModelObj = new EmployeeModel();
+    if(!Boolean(this.imgString)) //Returns true if the string is null
+    {
+      this.employeeModelObj.empImg='';
+    }
+    else
+    {
+      this.employeeModelObj.empImg = this.imgString;
+    }
+    this.employeeModelObj.empName = this.formValue.value.empName;
+    this.employeeModelObj.email = this.formValue.value.email;
+    this.employeeModelObj.mobile = this.formValue.value.mobile;
+    this.employeeModelObj.salary = this.formValue.value.salary;
 
-    // this.api.postEmployee(json)
+    //API Call
+    this.api.postEmployee(this.employeeModelObj)
     .subscribe(res=>{
       console.log(res);
       alert("Employee Added Successfully");
@@ -62,6 +88,7 @@ export class EmployeeDashboardComponent implements OnInit {
     
   }
   postMultipleEmployeeDetails() {
+    console.log(this.multipleEmployees);
     this.multipleEmployees.pop();
     for(let val of this.multipleEmployees)
     {
@@ -103,6 +130,18 @@ export class EmployeeDashboardComponent implements OnInit {
     this.showAdd = false;
     this.showUpdate = true;
     this.employeeModelObj.id = row.id;
+    if (row.empImg==="")
+    {
+      this.showUploadField = true;
+    }
+    else
+    {
+      this.showUploadField = false;
+      this.imgStringEditForm = row.empImg;
+
+    }
+    // console.log(this.showUploadField);
+    // console.log(this.imgStringEditForm);
     // this.formValue.controls['empImg'].setValue(row.empImg);
     this.formValue.controls['empName'].setValue(row.empName);
     this.formValue.controls['email'].setValue(row.email);
@@ -128,13 +167,13 @@ export class EmployeeDashboardComponent implements OnInit {
   }
   addNewForm()  {
     // this.employeeModelObj = new EmployeeModel();
-    this.employeeModelObj.empName = this.formValue.value.empName;
-    this.employeeModelObj.email = this.formValue.value.email;
-    this.employeeModelObj.mobile = this.formValue.value.mobile;
-    this.employeeModelObj.salary = this.formValue.value.salary;
-    this.formValue.reset;
+    // this.employeeModelObj.empName = this.formValue.value.empName;
+    // this.employeeModelObj.email = this.formValue.value.email;
+    // this.employeeModelObj.mobile = this.formValue.value.mobile;
+    // this.employeeModelObj.salary = this.formValue.value.salary;
+    // this.formValue.reset;
     this.employeeModelObj = new EmployeeModel();
-    this.multipleEmployees.push(this.employeeModelObj);
+    this.multipleEmployees.push({id: 0, empImg: '', empName: '', email: '', mobile : '', salary: ''});
     console.log(this.multipleEmployees);
     
   }
@@ -158,6 +197,17 @@ export class EmployeeDashboardComponent implements OnInit {
     // console.log((<string>reader.result).split(',')[1]);
     // console.log(reader.result);
  };
+  }
+
+  showImageModal(row: any)
+  {
+    this.imgStringModal = row.empImg;
+  }
+
+  userDeleteImage() {
+    this.showUploadField = true;
+    this.imgStringEditForm = '';
+
   }
 }
 

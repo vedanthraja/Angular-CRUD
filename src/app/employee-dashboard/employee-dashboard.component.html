@@ -1,117 +1,182 @@
 <nav class="navbar navbar-light bg-primary">
-    <div class="container-fluid">
-        <h1 style="color:white;">Angular CRUD</h1>
-        <div class="d-flex">
-            <button (click)="clickAddEmployee()" class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Employee</button>
-        </div>
-        <div class="d-flex">
-          <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal2">Add Multiple Employees</button>
-        </div>
-        
+  <div class="container-fluid">
+    <h1 style="color:white;">Angular CRUD</h1>
+    <div class="d-flex">
+      <button (click)="clickAddEmployee()" class="btn btn-success" type="button" data-bs-toggle="modal"
+        data-bs-target="#exampleModal">Add Employee</button>
     </div>
+    <div class="d-flex">
+      <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal2">Add Multiple
+        Employees</button>
+    </div>
+
+  </div>
 </nav>
 <div class="container-fluid">
   <table class="table mt-3">
     <thead>
-        <tr>
-            <th scope="col">Employee Image</th>
-            <th scope="col">Employee ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Email ID</th>
-            <th scope="col">Mobile No.</th>
-            <th scope="col">Salary</th>
-            <th scope="col">Action</th>
-        </tr>
+      <tr>
+        <th scope="col" colspan="2">Employee Image</th>
+        <th scope="col">Employee ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email ID</th>
+        <th scope="col">Mobile No.</th>
+        <th scope="col">Salary</th>
+        <th scope="col">Action</th>
+      </tr>
     </thead>
-        <tr *ngFor="let row of employeeData">
-            <td><img src="{{row.empImg}}" alt="emp-img"></td>
-            <td>{{row.id}}</td>
-            <td>{{row.empName}}</td>
-            <td>{{row.email}}</td>
-            <td>{{row.mobile}}</td>
-            <td>{{row.salary}}</td>
-            <td>
-                <button type="button" (click)="onEdit(row)" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</button>
-                <button class="btn btn-info mx-3" (click)="deleteEmployee(row)">Delete</button>
-            </td>
-        </tr>
     <tbody>
+      <tr *ngFor="let row of employeeData">
+        <td><button class="btn" (click)="showImageModal(row)" type="button" data-bs-toggle="modal"
+            data-bs-target="#imageModal"><img style="width:64px; margin:0;" src="{{row.empImg}}" alt="emp-img">
+          </button></td>
+        <td>{{row.id}}</td>
+        <td>{{row.empName}}</td>
+        <td>{{row.email}}</td>
+        <td>{{row.mobile}}</td>
+        <td>{{row.salary}}</td>
+        <td>
+          <button type="button" (click)="onEdit(row)" class="btn btn-info" data-bs-toggle="modal"
+            data-bs-target="#exampleModal">Edit</button>
+          <button class="btn btn-info mx-3" (click)="deleteEmployee(row)">Delete</button>
+        </td>
 
+        <!-- Modal -->
     </tbody>
-</table>
+  </table>
+</div>
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Image Preview</h5>
+      </div>
+      <div class="modal-body">
+        <img src="{{imgStringModal}}" alt="emp-img">
+      </div>
+    </div>
+  </div>
 </div>
 
-  
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Employee Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <form [formGroup] = "formValue">
-              <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Image</label>
-                <input type="file" (change)="onFileSelected($event)" formControlName="empImg" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Employee Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formValue" novalidate>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Image</label>
+            <div *ngIf="showUploadField">
+              <input type="file" (change)="onFileSelected($event)" formControlName="empImg" class="form-control"
+                id="exampleInputEmail1" aria-describedby="emailHelp">
+            </div>
+            <div *ngIf="!showUploadField">
+              <img src="{{imgStringEditForm}}" style="width:128px; margin-right: 15px;" alt="emp-img">
+              <button (click)="userDeleteImage()" class="btn btn-danger">Delete Image</button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Name</label>
+            <input type="text" formControlName="empName" class="form-control" id="exampleInputEmail1"
+              aria-describedby="emailHelp">
+            <div
+              *ngIf="formValue.controls['empName'].invalid && (formValue.controls['empName'].dirty || formValue.controls['empName'].touched)"
+              class="alert alert-danger">
+              <div *ngIf="formValue.controls['empName'].errors!.required">
+                Name is required.
               </div>
-                <div class="mb-3">
-                  <label for="exampleInputEmail1" class="form-label">Name</label>
-                  <input type="text" formControlName="empName" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Email ID</label>
-                    <input type="email" formControlName="email" class="form-control" id="exampleInputPassword1">
-                  </div>
-                  <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Mobile No.</label>
-                    <input type="text" formControlName="mobile" class="form-control" id="exampleInputPassword1">
-                  </div>
-                  <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Salary</label>
-                    <input type="text" formControlName="salary" class="form-control" id="exampleInputPassword1">
-                  </div>
-              </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button"  id="cancel" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" *ngIf="showAdd" class="btn btn-primary" (click)="postEmployeeDetails()">Add</button>
-          <button type="button" *ngIf="showUpdate" class="btn btn-primary" (click)="updateEmployeeDetails()">Update</button>
-        </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Email ID</label>
+            <input type="email" formControlName="email" class="form-control" id="exampleInputPassword1">
+          </div>
+
+          <div
+            *ngIf="formValue.controls['email'].invalid && (formValue.controls['email'].dirty || formValue.controls['email'].touched)"
+            class="alert alert-danger">
+            <div *ngIf="formValue.controls['email'].errors!.email">
+              Email is invalid.
+            </div>
+          </div>
+
+
+          <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Mobile No.</label>
+            <input type="text" formControlName="mobile" class="form-control" id="exampleInputPassword1">
+          </div>
+
+          <div
+            *ngIf="formValue.controls['mobile'].invalid && (formValue.controls['mobile'].dirty || formValue.controls['mobile'].touched)"
+            class="alert alert-danger">
+            <div
+              *ngIf="formValue.controls['mobile'].errors!.minlength || formValue.controls['mobile'].errors!.maxlength">
+              Mobile must be 10 characters long.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Salary</label>
+            <input type="text" formControlName="salary" class="form-control" id="exampleInputPassword1">
+          </div>
+          <div
+            *ngIf="formValue.controls['salary'].invalid && (formValue.controls['salary'].dirty || formValue.controls['salary'].touched)"
+            class="alert alert-danger">
+            <div *ngIf="formValue.controls['salary'].errors!.required">
+              Salary is required.
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="cancel" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" [disabled]="!formValue.valid" *ngIf="showAdd" class="btn btn-primary"
+          (click)="postEmployeeDetails()">Add</button>
+        <button type="button" *ngIf="showUpdate" class="btn btn-primary"
+          (click)="updateEmployeeDetails()">Update</button>
       </div>
     </div>
   </div>
-  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Employee Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <form *ngFor="let obj of multipleEmployees" [formGroup]="formValue">
-                <div class="row">
-                  <div class="col">
-                    <input type="text" placeholder="Name"  formControlName="empName" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                  <div class="col">
-                    <input type="text" placeholder="Email"  formControlName="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                  <div class="col">
-                    <input type="text" placeholder="Mobile"  formControlName="mobile" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                  <div class="col">
-                    <input type="text" placeholder="Salary"  formControlName="salary" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  </div>
-                </div>
-              </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-danger" (click)="addNewForm()">+</button>
-          <button type="button"  id="cancel-multiple" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" (click)="postMultipleEmployeeDetails()">Add</button>
-        </div>
+</div>
+<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Employee Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form *ngFor="let obj of multipleEmployees">
+          <div class="row">
+            <div class="col">
+              <input type="text" placeholder="Name" [(ngModel)]="obj.empName" [ngModelOptions]="{standalone: true}"
+                class="form-control" aria-describedby="emailHelp">
+            </div>
+            <div class="col">
+              <input type="text" placeholder="Email" [(ngModel)]="obj.email" [ngModelOptions]="{standalone: true}"
+                class="form-control" aria-describedby="emailHelp">
+            </div>
+            <div class="col">
+              <input type="text" placeholder="Mobile" [(ngModel)]="obj.mobile" [ngModelOptions]="{standalone: true}"
+                class="form-control" aria-describedby="emailHelp">
+            </div>
+            <div class="col">
+              <input type="text" placeholder="Salary" [(ngModel)]="obj.salary" [ngModelOptions]="{standalone: true}"
+                class="form-control" aria-describedby="emailHelp">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" (click)="addNewForm()">+</button>
+        <button type="button" id="cancel-multiple" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="postMultipleEmployeeDetails()">Add</button>
       </div>
     </div>
   </div>
+</div>
